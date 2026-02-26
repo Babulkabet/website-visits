@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOLOVERXS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* ОБЪЯВЛЕНИЕ ВАШЕГО ШРИФТА (Замените путь) */
+        @font-face {
+            font-family: 'HoloverxsCustom'; 
+            src: url('C6VM2RT4EU2NNT5XZWVYHR7WOIOGM4EU.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+            display: swap; 
+        }
+
+        /* ОБЩИЕ СТИЛЫ */
+        * {
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%; 
+            overflow: hidden; 
+            font-family: 'HoloverxsCustom', 'JetBrains Mono', 'Poppins', sans-serif; 
+            color: white;
+            /* ГЛАВНОЕ: скрываем курсор на всём теле */
+            cursor: none; 
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1; 
+            transition: opacity 1s ease-out;
+        }
+
+        /* 1. ВИДЕО ФОН И ЭФФЕКТЫ */
+        .video-container {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -10;
+            /* Убран filter: blur(5px). Осталась только пониженная яркость. */
+            filter: brightness(0.6);
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        #background-video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ЭФФЕКТ ШУМА/ЗЕРНИСТОСТИ */
+        .video-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANNSnEQAAAAAElFTkSuQmCC) repeat; 
+            opacity: 0.05;
+            pointer-events: none;
+            animation: noise-animation 1s steps(2) infinite;
+        }
+        @keyframes noise-animation {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
+        }
+
+
+        /* 2. ЭКРАН ЗАГРУЗКИ ("CLICK TO ENTER") */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out, visibility 1s ease-out;
+            cursor: none;
+        }
+
+        /* ЭФФЕКТ CLICK TO ENTER */
+        #splash-screen__prompt {
+            font-size: 2.5em;
+            color: #2c2c2c;
+            font-weight: normal;
+            animation: simple-blink 1.2s infinite alternate;
+            text-shadow: none;
+            cursor: none !important; /* Скрываем курсор на тексте входа */
+            font-family: 'Press Start 2P', sans-serif;
+        }
+
+        /* Новая анимация для мигания текста */
+        @keyframes simple-blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+
+        /* 3. ГЛАВНЫЙ КОНТЕЙНЕР */
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px; 
+            padding: 20px;
+            perspective: 1000px;
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        /* 4. ЕДИНАЯ ШАПКА */
+        #unified-header {
+            margin-bottom: 30px;
+            text-align: center;
+            transform: translateZ(50px);
+        }
+
+        #main-title {
+            font-size: 1.8em; 
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #star {
+            font-size: 1.5em;
+            color: #b9b6b9;
+            text-shadow: 0 0 8px #b9b6b9, 0 0 15px rgba(223, 221, 223, 0.5);
+            animation: spin 15s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 5. ЕДИНАЯ ГЛАВНАЯ КАРТОЧКА (ПЛАШКА) */
+        #main-card {
+            background-color: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
+            border: 2px solid #b9b6b9;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(187, 187, 187, 0.5);
+            width: 100%;
+            max-width: 600px; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s, transform 0.1s ease-out;
+            will-change: transform;
+            position: relative; 
+            cursor: none !important; /* Скрываем курсор на карточке */
+        }
+
+        /* Секция: Профиль и Соцсети */
+        #card-profile-section {
+            display: flex;
+            justify-content: flex-start; 
+            align-items: center;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(15px); 
+        }
+
+        #user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Стиль для видео-аватара */
+        #user-info .avatar-video { 
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover; /* Аналог background-size: cover для видео */
+            flex-shrink: 0;
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        #user-info .info .name {
+            font-size: 1.2em;
+            font-weight: 700;
+            white-space: nowrap; 
+        }
+
+        /* АНИМАЦИЯ НАБОРА ТЕКСТА (ВНУТРИ ПЛАШКИ) */
+        #card-typing-name {
+            /* Моноширинный шрифт для четкого отображения курсора и глитч-символов */
+            font-family: 'JetBrains Mono', monospace; 
+            display: inline-block;
+            font-weight: 700;
+            color: white;
+            min-height: 1.2em; /* Чтобы текст не "прыгал" */
+        }
+        
+        /* Стиль для курсора, который теперь добавляется в JS */
+        #card-typing-name:after {
+            content: '';
+            display: inline-block;
+        }
+
+
+        #user-info .info .status {
+            font-size: 0.8em;
+            color: #b9b6b9;
+        }
+
+        #social-links-card {
+            display: flex;
+            gap: 15px;
+            margin-left: auto; 
+            margin-right: 20px; 
+        }
+
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            transition: transform 0.3s, opacity 0.3s;
+            opacity: 0.7;
+            cursor: none !important; /* Скрываем курсор на иконках */
+        }
+
+        .social-icon:hover {
+            transform: scale(1.15);
+            opacity: 1;
+        }
+
+        /* 6. ГОРИЗОНТАЛЬНЫЙ ПЛЕЕР ВНУТРИ КАРТОЧКИ */
+        #music-player-section {
+            display: flex; 
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #player-top-row {
+            display: flex; 
+            align-items: center; 
+            gap: 20px;
+        }
+
+        #left-player-info {
+            display: flex; 
+            align-items: center; 
+            gap: 0; 
+            flex-grow: 1;
+        }
+
+        #track-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            flex-grow: 1;
+            min-width: 0; 
+            gap: 5px;
+            padding-left: 5px; 
+        }
+
+        #track-artist {
+            font-size: 0.8em;
+            font-weight: 300;
+            opacity: 0.7;
+        }
+
+        #track-title {
+            font-size: 1em;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%; 
+        }
+
+        #control-section {
+            display: flex;
+            flex-direction: column; 
+            align-items: flex-end;
+            gap: 10px; 
+            flex-shrink: 0;
+        }
+
+        #player-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(173, 173, 173, 0.1);
+            border: none;
+            color: #b9b6b9;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1em;
+            cursor: none !important; /* Скрываем курсор на кнопках плеера */
+            transition: background-color 0.2s, transform 0.2s, text-shadow 0.2s;
+            box-shadow: 0 0 5px rgba(194, 192, 194, 0.5);
+        }
+
+        .control-btn:hover {
+            background-color: rgba(196, 191, 196, 0.2);
+            transform: scale(1.15);
+            text-shadow: 0 0 8px #b9b6b9;
+        }
+
+        #volume-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #volume-slider {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            outline: none;
+            cursor: none !important; /* Скрываем курсор на слайдере громкости */
+            transition: background-color 0.2s;
+        }
+        #volume-slider:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            cursor: none !important; /* Скрываем курсор на ползунке слайдера */
+            box-shadow: 0 0 5px #b9b6b9;
+        }
+
+        /* 6.5. Ползунок перемотки */
+        #progress-bar-container {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8em;
+            color: #b9b6b9;
+        }
+
+        #progress-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px; 
+            background: rgba(173, 173, 173, 0.2);
+            border-radius: 5px;
+            outline: none;
+            cursor: none !important;
+            transition: background 0.2s;
+        }
+
+        #progress-slider:hover {
+            background: rgba(173, 173, 173, 0.4);
+        }
+
+        #progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+            cursor: none !important; 
+            box-shadow: 0 0 5px #b9b6b9;
+        }
+
+
+        /* 7. СЧЕТЧИК ПОСЕТИТЕЛЕЙ (ВНУТРИ ПЛАШКИ) */
+        #top-left-counter-wrapper {
+            position: absolute;
+            top: 15px; 
+            left: 15px; 
+            display: flex;
+            align-items: center;
+            gap: 5px; 
+            z-index: 10; 
+        }
+
+        /* Стиль для иконки глаза */
+        #eye-icon-in-card {
+            height: 16px; 
+            width: auto;
+        }
+
+        /* Стиль для цифр счетчика (кастомный шрифт и БЕЛЫЙ цвет) */
+        #visitor-counter-number-in-card {
+            font-family: 'HoloverxsCustom', monospace; 
+            font-size: 0.9em; 
+            font-weight: 700;
+            color: white; 
+            line-height: 1;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+        }
+
+
+        /* 8. КУРСОР И БЛЕСТКИ */
+        #cursor-ball {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            border-radius: 50%;
+            pointer-events: none; 
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, opacity 0.3s;
+            z-index: 2000;
+            mix-blend-mode: difference;
+        }
+        /* Увеличение курсора при наведении на интерактивные элементы */
+        .control-btn:hover ~ #cursor-ball,
+        #splash-screen__prompt:hover ~ #cursor-ball,
+        .social-icon:hover ~ #cursor-ball,
+        #main-card:hover ~ #cursor-ball,
+        #progress-slider:hover ~ #cursor-ball,
+        #volume-slider:hover ~ #cursor-ball { 
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1999;
+            mix-blend-mode: difference;
+            animation: fall 1s linear forwards;
+        }
+
+
+        /* 9. АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+        @media only screen and (max-width: 768px) {
+            body { 
+                overflow: auto; 
+                height: auto; 
+                cursor: auto; 
+            }
+            
+            #cursor-ball, .sparkle { display: none !important; }
+            #splash-screen__prompt { font-size: 1.8em; text-align: center; padding: 0 20px; cursor: auto !important; }
+            #main-container { padding: 15px; width: 100%; }
+            #unified-header { margin-bottom: 20px; }
+            #main-card { width: 100%; max-width: 100%; padding: 20px; transform: none !important; perspective: none; box-shadow: 0 0 20px rgba(187, 187, 187, 0.4); cursor: auto !important; }
+            #card-profile-section { padding-bottom: 20px; }
+            #user-info { gap: 12px; }
+            #user-info .avatar-video { width: 60px; height: 60px; }
+            #user-info .info .name { font-size: 1.1em; }
+            #user-info .info .status { font-size: 0.75em; }
+            #social-links-card { display: flex; gap: 10px; margin-right: 0; margin-left: auto; }
+            .social-icon { width: 28px; height: 28px; cursor: pointer !important; }
+            
+            /* Адаптация плеера */
+            #music-player-section { flex-direction: column; gap: 15px; align-items: center; }
+            #player-top-row { flex-direction: column; gap: 15px; width: 100%; }
+            #left-player-info { width: 100%; gap: 0; }
+            #track-section { align-items: center; }
+            #track-title { font-size: 0.9em; }
+            #control-section { width: 100%; align-items: center; gap: 15px; }
+            #player-controls { gap: 15px; }
+            .control-btn { width: 45px; height: 45px; cursor: pointer !important; }
+            #volume-slider { width: 150px; cursor: pointer !important; }
+            #progress-bar-container { margin-top: 10px; }
+            #progress-slider { cursor: pointer !important; }
+
+            /* Мобильная адаптация для счетчика */
+            #top-left-counter-wrapper {
+                top: 10px;
+                left: 10px;
+                font-size: 0.8em; 
+            }
+        }
+
+        /* Дополнительная настройка для очень узких экранов ( < 380px) */
+        @media only screen and (max-width: 380px) {
+            #splash-screen__prompt { font-size: 1.5em; }
+            #main-card { padding: 15px; }
+            #user-info { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+            #card-profile-section { flex-direction: column; align-items: center; gap: 20px; }
+            #user-info .info .name { white-space: normal; }
+            #left-player-info { flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+            #track-section { align-items: center; }
+        }
+
+    </style>
+</head>
+<body> 
+
+    <div class="video-container">
+        <video id="background-video" preload="auto" muted loop playsinline>
+            Ваш браузер не поддерживает видео.
+        </video>
+    </div>
+
+    <div id="splash-screen">
+        <div id="splash-screen__prompt">ДА НАЖМИ ТЫ УЖЕ</div>
+    </div> 
+
+    <div id="main-container">
+
+        <header id="unified-header">
+            <h1 id="main-title">
+                HOLOVERXS <span id="star">★</span>
+            </h1>
+        </header>
+
+        <main id="main-card">
+            
+            <div id="top-left-counter-wrapper">
+                <img src="icons8-eye.png" alt="Eye Icon" id="eye-icon-in-card"> 
+                <span id="visitor-counter-number-in-card">1</span>
+            </div>
+            
+            <section id="card-profile-section">
+                <div id="user-info">
+                    <video id="avatar-video" src="0acd60eeebae6d743055dac9d2fd37c9.mp4" 
+                           autoplay muted loop playsinline 
+                           class="avatar-video"></video>
+                    <div class="info">
+                        <div class="name"><span id="card-typing-name"></span></div>
+                        <div class="status">last seen 4 hours ago</div>
+                    </div>
+                </div>
+
+                <div id="social-links-card">
+                    <a href="https://steamcommunity.com/profiles/76561199526518660" target="_blank" title="Steam">
+                        <img src="staem.gif" alt="Steam" class="social-icon">
+                    </a>
+                    <a href="https://t.me/holoverxxx" target="_blank" title="Telegram">
+                        <img src="telegram.gif" alt="Telegram" class="social-icon">
+                    </a>
+                    
+                </div>
+            </section>
+
+            <section id="music-player-section">
+                
+                <div id="player-top-row">
+                    <div id="left-player-info">
+                        <div id="track-section">
+                            <div id="track-artist">Исполнитель</div>
+                            <div id="track-title">Название трека</div>
+                        </div>
+                    </div>
+
+                    <div id="control-section">
+                        <div id="player-controls">
+                            <button id="prevBtn" class="control-btn" title="Предыдущий трек"><i class="fas fa-backward"></i></button>
+                            <button id="playPauseBtn" class="control-btn" title="Воспроизведение/Пауза"><i class="fas fa-play"></i></button>
+                            <button id="nextBtn" class="control-btn" title="Следующий трек"><i class="fas fa-forward"></i></button>
+                        </div>
+
+                        <div id="volume-control">
+                            <i id="volume-icon" class="fas fa-volume-up"></i>
+                            <input type="range" id="volume-slider" min="0" max="100" value="60">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="progress-bar-container">
+                    <span id="current-time">0:00</span>
+                    <input type="range" id="progress-slider" min="0" max="100" value="0" step="0.1">
+                    <span id="duration">0:00</span>
+                </div>
+
+            </section>
+        </main>
+    </div> 
+
+    <div id="cursor-ball"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // --- 0. ЛОГИКА КАСТОМНОГО СЧЕТЧИКА ПОСЕЩЕНИЙ ---
+    const counterElement = document.getElementById('visitor-counter-number-in-card');
+    const storageKey = 'holoverxs_visit_count';
+    const initialCount = 42; 
+
+    function updateVisitorCount() {
+        let count = localStorage.getItem(storageKey);
+        
+        if (count === null) {
+            count = initialCount;
+        } else {
+            count = parseInt(count, 10) + 1;
+        }
+
+        counterElement.textContent = count;
+        localStorage.setItem(storageKey, count);
+    }
+    
+    updateVisitorCount(); 
+
+
+    // --- 1. ГЛОБАЛЬНЫЕ КОНСТАНТЫ ДЛЯ ГЛИТЧА И НАБОРА ТЕКСТА ---
+    const GLITCH_CHARS = "%$^&*#!@{}><"; // Символы для глитча
+    const GLITCH_DURATION = 80; // Время "перебора" символов
+    const GLITCH_ITERATIONS = 3; // Количество "мусорных" символов перед настоящим
+    const TYPE_DELAY = 150; // Скорость набора (время между буквами)
+    const ERASE_DELAY = 80; // Скорость стирания
+    const PAUSE_BEFORE_ERASE = 1500; // Пауза перед стиранием
+    
+    function getRandomChar() {
+        return GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+    }
+
+    // --- 1.1. ЭФФЕКТ НАБОРА ТЕКСТА В ПЛАШКЕ (ЦИКЛИЧЕСКИЙ С ГЛИТЧ-НАБОРОМ) ---
+    const cardNameText = "HOLOVERXS";
+    const cardNameElement = document.getElementById('card-typing-name');
+    const CARD_CURSOR = '_'; 
+    let cardCharIndex = 0;
+
+    function typeWriterCard() {
+        if (cardCharIndex < cardNameText.length) {
+            glitchTypeCard(0);
+        } else {
+            // Убираем курсор (оставляем только текст)
+            cardNameElement.textContent = cardNameText; 
+            setTimeout(eraseWriterCard, PAUSE_BEFORE_ERASE);
+        }
+    }
+
+    function glitchTypeCard(iteration) {
+        const currentText = cardNameText.substring(0, cardCharIndex);
+
+        if (iteration < GLITCH_ITERATIONS) {
+            // Отображаем глитч-символ + курсор
+            cardNameElement.textContent = currentText + getRandomChar() + CARD_CURSOR;
+            
+            setTimeout(() => glitchTypeCard(iteration + 1), GLITCH_DURATION);
+        } else {
+            // Печатаем настоящую букву + курсор
+            const nextText = cardNameText.substring(0, cardCharIndex + 1);
+            cardNameElement.textContent = nextText + CARD_CURSOR;
+            
+            cardCharIndex++;
+            setTimeout(typeWriterCard, TYPE_DELAY); // Переход к следующей букве
+        }
+    }
+
+    function eraseWriterCard() {
+        if (cardCharIndex > 0) {
+            // Отображаем глитч-символ перед стиранием + курсор
+            const currentTextBeforeErase = cardNameText.substring(0, cardCharIndex - 1);
+            cardNameElement.textContent = currentTextBeforeErase + getRandomChar() + CARD_CURSOR;
+
+            // Ждем, чтобы показать глитч, затем стираем
+            setTimeout(() => {
+                cardCharIndex--;
+                cardNameElement.textContent = cardNameText.substring(0, cardCharIndex) + CARD_CURSOR;
+                setTimeout(eraseWriterCard, ERASE_DELAY);
+            }, GLITCH_DURATION / 2);
+        } else {
+            // Закончили стирать. Начинаем заново.
+            cardNameElement.textContent = CARD_CURSOR; // Показываем только курсор
+            setTimeout(typeWriterCard, TYPE_DELAY);
+        }
+    }
+    
+    typeWriterCard(); 
+
+
+    // --- 1.5. ЭФФЕКТ НАБОРА ТЕКСТА В ЗАГОЛОВКЕ БРАУЗЕРА (ЦИКЛИЧЕСКИЙ С ГЛИТЧ-НАБОРОМ) ---
+    const titleText = "HOLOVERXS";
+    const titleElement = document.getElementsByTagName('title')[0];
+    const TITLE_CURSOR = ''; // Символ для отображения курсора в заголовке
+    let titleCharIndex = 0;
+
+    function typeWriterTitle() {
+        if (titleCharIndex < titleText.length) {
+            glitchTypeTitle(0);
+        } else {
+            // Закончили печатать. Показываем полную строку + курсор и ждем
+            titleElement.textContent = titleText + TITLE_CURSOR;
+            setTimeout(eraseWriterTitle, PAUSE_BEFORE_ERASE);
+        }
+    }
+
+    function glitchTypeTitle(iteration) {
+        const currentText = titleText.substring(0, titleCharIndex);
+
+        if (iteration < GLITCH_ITERATIONS) {
+            // Текущий текст + случайный мусорный символ + курсор
+            titleElement.textContent = currentText + getRandomChar() + TITLE_CURSOR;
+            
+            setTimeout(() => glitchTypeTitle(iteration + 1), GLITCH_DURATION);
+        } else {
+            // Печатаем настоящую букву
+            const nextText = titleText.substring(0, titleCharIndex + 1);
+            titleElement.textContent = nextText + TITLE_CURSOR;
+            
+            titleCharIndex++;
+            setTimeout(typeWriterTitle, TYPE_DELAY); 
+        }
+    }
+
+    function eraseWriterTitle() {
+        if (titleCharIndex > 0) {
+            // Отображаем глитч-символ перед стиранием
+            const currentTextBeforeErase = titleText.substring(0, titleCharIndex - 1);
+            titleElement.textContent = currentTextBeforeErase + getRandomChar() + TITLE_CURSOR;
+
+            // Ждем, чтобы показать глитч, затем стираем
+            setTimeout(() => {
+                titleCharIndex--;
+                titleElement.textContent = titleText.substring(0, titleCharIndex) + TITLE_CURSOR;
+                setTimeout(eraseWriterTitle, ERASE_DELAY);
+            }, GLITCH_DURATION / 2);
+        } else {
+            // Закончили стирать. Показываем только курсор, ждем и начинаем снова
+            titleElement.textContent = TITLE_CURSOR; 
+            setTimeout(typeWriterTitle, TYPE_DELAY);
+        }
+    }
+    
+    // Запускаем эффект для заголовка
+    typeWriterTitle(); 
+
+
+    // --- 2. СПИСОК ТРЕКОВ И ЛОГИКА ПЛЕЕРА ---
+    const trackList = [
+        { file: 'BOO! ft. Gamesense.pub cracked.mp4', video: 'BOO! ft. Gamesense.pub cracked.mp4', artist: 'OBLADAET', title: 'BOO!' },
+        { file: 'Heronwater - Сваровски.mp4', video: 'Heronwater - Сваровски.mp4', artist: 'Heronwater', title: 'Сваровски' },
+        { file: 'owa owa.mp4', video: 'owa owa.mp4', artist: 'Lil Tecca', title: 'OWA OWA' },
+        { file: 'Heronwater - ТАХО (Lyric Video).mp4', video: 'Heronwater - ТАХО (Lyric Video).mp4', artist: 'Heronwater', title: 'ТАХО' },
+        { file: 'Heronwater - 1ST DAY SMOKE Lyric Video [get.gt].mp4', video: 'Heronwater - 1ST DAY SMOKE Lyric Video [get.gt].mp4', artist: 'Heronwater', title: '1ST DAY SMOKE' }
+        // 💡 УБЕДИТЕСЬ, ЧТО ИМЕНА ФАЙЛОВ .mp3 И .mp4 ТОЧНО СОВПАДАЮТ С ТЕМИ, ЧТО В ЭТОМ СПИСКЕ!
+    ];
+
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+
+    // --- ЭЛЕМЕНТЫ DOM ПЛЕЕРА И ЭФФЕКТОВ ---
+    const audio = new Audio();
+    const video = document.getElementById('background-video');
+    const splashScreen = document.getElementById('splash-screen');
+    const mainContainerEl = document.getElementById('main-container'); 
+
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeIcon = document.getElementById('volume-icon');
+
+    const trackArtistEl = document.getElementById('track-artist');
+    const trackTitleEl = document.getElementById('track-title');
+    
+    // Элементы для прогресс-бара
+    const progressSlider = document.getElementById('progress-slider');
+    const currentTimeEl = document.getElementById('current-time');
+    const durationEl = document.getElementById('duration');
+
+    const cursorBall = document.getElementById('cursor-ball');
+    const card = document.getElementById('main-card');
+
+    // Инициализация
+    // loadTrack(currentTrackIndex); // Убрано. Первый трек загружается и запускается по клику.
+    audio.volume = volumeSlider.value / 100;
+    updateVolumeIcon(volumeSlider.value);
+
+
+    function loadTrack(index) {
+        const track = trackList[index];
+        
+        // 1. Обновление источника MP3
+        audio.src = track.file;
+        audio.load(); 
+
+        // 2. Обновление источника MP4
+        video.src = track.video;
+        video.load(); 
+
+        // 3. Обновление текста
+        trackArtistEl.textContent = track.artist;
+        trackTitleEl.textContent = track.title;
+        
+        // Сброс прогресса
+        progressSlider.value = 0;
+        currentTimeEl.textContent = '0:00';
+        durationEl.textContent = '0:00';
+    }
+
+    // Вспомогательная функция для форматирования времени
+    function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    function playPause() {
+        if (isPlaying) {
+            audio.pause();
+            video.pause();
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        } else {
+            // Пытаемся запустить аудио и видео
+            audio.play().catch(error => {
+                console.error("Ошибка воспроизведения аудио (проверьте имя файла .mp3):", error);
+            });
+            video.play().catch(error => {
+                console.error("Ошибка воспроизведения видео (проверьте имя файла .mp4):", error);
+            });
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+        isPlaying = !isPlaying;
+    }
+
+    function nextTrack() {
+        currentTrackIndex = (currentTrackIndex + 1) % trackList.length;
+        loadTrack(currentTrackIndex);
+        if (isPlaying) {
+            audio.play();
+            video.play();
+        }
+    }
+
+    function prevTrack() {
+        currentTrackIndex = (currentTrackIndex - 1 + trackList.length) % trackList.length;
+        loadTrack(currentTrackIndex);
+        if (isPlaying) {
+            audio.play();
+            video.play();
+        }
+    }
+
+    function updateVolumeIcon(volumeValue) {
+        const volume = parseInt(volumeValue, 10);
+        volumeIcon.className = 'fas';
+        if (volume === 0) {
+            volumeIcon.classList.add('fa-volume-off');
+        } else if (volume < 50) {
+            volumeIcon.classList.add('fa-volume-down');
+        } else {
+            volumeIcon.classList.add('fa-volume-up');
+        }
+    }
+
+    // --- 3. ОБРАБОТЧИКИ СОБЫТИЙ ПЛЕЕРА ---
+
+    document.getElementById('playPauseBtn').addEventListener('click', (e) => { e.stopPropagation(); playPause(); });
+    document.getElementById('nextBtn').addEventListener('click', (e) => { e.stopPropagation(); nextTrack(); });
+    document.getElementById('prevBtn').addEventListener('click', (e) => { e.stopPropagation(); prevTrack(); });
+    
+    audio.addEventListener('ended', nextTrack); 
+    video.addEventListener('ended', nextTrack);
+
+    volumeSlider.addEventListener('input', () => {
+        const volume = volumeSlider.value / 100;
+        audio.volume = volume;
+        updateVolumeIcon(volumeSlider.value);
+    });
+
+    // Обновление ползунка перемотки и времени
+    audio.addEventListener('timeupdate', () => {
+        if (!isNaN(audio.duration)) {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressSlider.value = progress;
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+            
+            // Синхронизация видео
+            if (Math.abs(audio.currentTime - video.currentTime) > 0.5) {
+                video.currentTime = audio.currentTime;
+            }
+        }
+    });
+
+    // Установка общей продолжительности после загрузки метаданных
+    audio.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audio.duration);
+        progressSlider.max = 100;
+        progressSlider.step = 0.1; 
+    });
+
+    // Перемотка при изменении ползунка
+    progressSlider.addEventListener('input', () => {
+        if (!isNaN(audio.duration)) {
+            const seekTime = (progressSlider.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+            // Синхронизация видео
+            video.currentTime = seekTime;
+        }
+    });
+
+
+    // --- 3.5. ПАУЗА ПРИ СВОРАЧИВАНИИ ---
+    function handleVisibilityChange() {
+        // Проверяем, было ли медиа в процессе воспроизведения до переключения
+        if (isPlaying) {
+            if (document.hidden) {
+                // Если вкладка неактивна, ставим на паузу
+                audio.pause();
+                video.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                // Если вкладка становится активной, возобновляем
+                audio.play().catch(error => console.error("Ошибка при возобновлении аудио:", error));
+                video.play().catch(error => console.error("Ошибка при возобновлении видео:", error));
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+
+    // --- 4. КУРСОР И ЭФФЕКТЫ ---
+
+    let throttleFlag = false;
+    function createSparkle(x, y) {
+        if (throttleFlag) return;
+        throttleFlag = true;
+
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = x + 'px';
+        sparkle.style.top = y + 'px';
+
+        // Небольшое случайное смещение
+        sparkle.style.transform = `translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px)`;
+
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => {
+            sparkle.remove();
+        }, 1000);
+
+        // Ограничитель скорости для блесток
+        setTimeout(() => {
+            throttleFlag = false;
+        }, 150); 
+    }
+
+    // Обновление курсора и создание блесток
+    document.addEventListener('mousemove', (e) => {
+        cursorBall.style.left = e.clientX + 'px';
+        cursorBall.style.top = e.clientY + 'px';
+        
+        // Создаем блестки только если не наводимся на главный контейнер (для более чистого эффекта)
+        if (!e.target.closest('#main-card') && !e.target.closest('#splash-screen')) {
+             createSparkle(e.clientX, e.clientY);
+        }
+    });
+
+    // 3D-эффект наведения на карточку
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const deltaX = (x - centerX) / centerX;
+        const deltaY = (y - centerY) / centerY;
+
+        const tiltX = deltaY * -5; // Наклон по оси X зависит от положения Y
+        const tiltY = deltaX * 5;  // Наклон по оси Y зависит от положения X
+
+        card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    });
+
+
+    // --- 5. ЭКРАН ВХОДА И ЗАПУСК МЕДИА ---
+
+    splashScreen.addEventListener('click', () => {
+
+        // 1. **ВЫБИРАЕМ СЛУЧАЙНЫЙ ТРЕК**
+        currentTrackIndex = Math.floor(Math.random() * trackList.length);
+
+        // 2. Загружаем выбранный случайный трек
+        loadTrack(currentTrackIndex); 
+        
+        // 3. Запускаем воспроизведение
+        // playPause() автоматически запускает и видео, и аудио, и меняет isPlaying.
+        if (!isPlaying) {
+             playPause(); 
+        }
+
+        // 4. Скрытие экрана-заставки и показ основного контента
+        splashScreen.style.opacity = '0';
+        splashScreen.style.visibility = 'hidden';
+
+        mainContainerEl.style.opacity = '1';
+
+        setTimeout(() => {
+            splashScreen.remove(); // Удаляем элемент для чистоты DOM
+        }, 1000); 
+    }, { once: true }); 
+
+    
+    // --- 6. ЗАПУСК ВИДЕО-АВАТАРА (должно быть muted) ---
+    const avatarVideo = document.getElementById('avatar-video');
+    if (avatarVideo) {
+        // Дополнительный вызов play() на случай, если autoplay не сработал
+        avatarVideo.play().catch(e => console.log("Не удалось запустить видео-аватар (браузеры могут блокировать auto-play).", e));
+    }
+
+
+    });
+</script>
+
+</body>
+</html>

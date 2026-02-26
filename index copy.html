@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>С Днем Рождения, Саша — Dream Glass</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#F8F4FF; --bg-2:#FFF8FB;
+  --glass-1: rgba(255,255,255,0.55);
+  --accent-1:#FF6FB5; --accent-2:#7BD3FF; --accent-3:#FFD37B;
+  --muted:#6B6B7A;
+  --radius-lg:20px;
+  --shadow-soft: 0 8px 30px rgba(18,18,25,0.06);
+  --neon: 0 8px 30px rgba(255,111,181,0.12);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial;
+  background: linear-gradient(180deg,#120016 0%, #2b003a 100%); color:#fff;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  position:relative; overflow-x:hidden;
+}
+
+/* sparkles canvas sits under content and won't block clicks */
+#sparkle-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* container on top */
+.container{position:relative;z-index:10;max-width:980px;margin:0 auto;padding:20px}
+
+/* header */
+.header{display:flex;align-items:center;gap:16px;padding:18px;border-radius:16px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  backdrop-filter: blur(8px); box-shadow:var(--shadow-soft); border:1px solid rgba(255,255,255,0.03)
+}
+.logo{width:72px;height:72px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-family:'Sacramento';font-size:30px;color:var(--accent-1);
+  background:linear-gradient(135deg,#2f002f,#4b003f); box-shadow: 0 6px 18px rgba(123,44,98,0.06);
+}
+.title{font-weight:800;font-size:20px;margin:0;color:#fff}
+.subtitle{font-size:13px;margin-top:4px;color:rgba(255,255,255,0.75)}
+.action{display:flex;gap:10px;align-items:center}
+.btn{padding:10px 14px;border-radius:999px;border:none;font-weight:600;cursor:pointer}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff}
+.btn-primary{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#111;box-shadow:var(--neon)}
+
+/* hero */
+.hero{margin-top:18px;display:grid;grid-template-columns:1fr;gap:14px}
+.hero-card{padding:20px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.03);box-shadow:var(--shadow-soft)}
+.hi{font-size:20px;margin:0;color:#fff}
+.age{font-size:13px;margin-top:6px;color:rgba(255,255,255,0.8)}
+.banner-pulse{display:inline-block;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg,var(--accent-2),var(--accent-1));color:#111;font-weight:700;animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+
+/* sections/cards */
+.grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+.card{padding:16px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03)}
+.card h3{margin:0 0 8px 0}
+.card p{margin:0;color:rgba(255,255,255,0.8)}
+
+/* wishes */
+.wishes{display:flex;flex-direction:column;gap:10px}
+.wish{display:flex;align-items:flex-start;gap:12px;padding:10px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid rgba(255,255,255,0.02)}
+.wish .emoji{font-size:20px}
+.wish .txt{font-weight:600;color:#fff}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.thumb{aspect-ratio:1/1;border-radius:12px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 20px rgba(0,0,0,0.4);cursor:pointer;position:relative;overflow:hidden}
+.thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.2));opacity:0;transition:opacity .25s}
+.thumb:hover::after{opacity:1}
+
+/* game */
+.game-area{position:relative;height:220px;border-radius:12px;border:2px solid rgba(255,255,255,0.04);overflow:hidden;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005))}
+.basket{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);width:84px;height:18px;border-radius:12px;background:linear-gradient(90deg,var(--accent-1),var(--accent-3));display:flex;align-items:center;justify-content:center;font-weight:800;color:#111}
+.heart{position:absolute;font-size:22px;pointer-events:none;filter:drop-shadow(0 8px 18px rgba(255,111,181,0.12))}
+
+/* modal overlay */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:18px;visibility:hidden;opacity:0;transition:opacity .25s, visibility .25s;z-index:9999;pointer-events:none}
+.modal.open{visibility:visible;opacity:1;pointer-events:auto}
+.modal-inner{position:relative;width:100%;max-width:640px;border-radius:18px;padding:20px;background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));backdrop-filter: blur(8px);box-shadow:0 30px 80px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03)}
+.close{position:absolute;top:14px;right:14px;background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer}
+
+/* subtle sparkles container above canvas but below modals */
+.sparks{position:fixed;inset:0;pointer-events:none;z-index:2}
+
+/* responsive */
+@media(min-width:720px){
+  .hero{grid-template-columns:1fr 300px}
+  .gallery{grid-template-columns:repeat(4,1fr)}
+  .grid{grid-template-columns:1fr 1fr}
+}
+.footer{margin:28px 0 80px 0;text-align:center;color:rgba(255,255,255,0.6);font-size:13px}
+</style>
+</head>
+<body>
+
+<canvas id="sparkle-canvas"></canvas>
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">С❤</div>
+    <div style="flex:1">
+      <div class="title">С Днем Рождения, Саша!</div>
+      <div class="subtitle">13 ноября — 16 лет · Сюрприз внутри</div>
+    </div>
+    <div class="action">
+      <button class="btn btn-ghost" id="open-friends">Друзья</button>
+      <button class="btn btn-primary" id="open-secret">Открыть секрет</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="hero">
+    <section class="hero-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+        <div>
+          <h2 class="hi">Сегодня твой день, Саша ✨</h2>
+          <div class="age">Пусть 16-й год будет мягким как облако и ярким как конфетти</div>
+        </div>
+        <div><div class="banner-pulse">Сюрприз внутри</div></div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <div class="card" style="flex:1;min-width:200px">
+          <h3>Немного магии</h3>
+          <p>Нежные анимации, плавные карточки и мини-игра — для полного погружения.</p>
+        </div>
+        <div class="card" style="width:220px;min-width:160px;text-align:center">
+          <h3>Тебе 16!</h3>
+          <p style="font-weight:800;font-size:18px;color:var(--accent-1)">С Днём Рождения</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:12px">
+      <h3>Пожелания ✨</h3>
+      <div class="wishes" style="margin-top:10px">
+        <div class="wish"><div class="emoji">💖</div><div class="txt">Тонны вдохновения</div></div>
+        <div class="wish"><div class="emoji">👯‍♀️</div><div class="txt">Незабываемые моменты с друзьями</div></div>
+        <div class="wish"><div class="emoji">🍀</div><div class="txt">Удача и лёгкость в учёбе</div></div>
+        <div class="wish"><div class="emoji">🎧</div><div class="txt">Идеальный плейлист</div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Grid: Gallery + Game -->
+  <section class="grid" style="margin-top:16px">
+    <div class="card">
+      <h3>Галерея — твои лучшие моменты 📸</h3>
+      <div class="gallery" id="gallery" style="margin-top:12px">
+        <div class="thumb" style="background-image:url('sasha1.jpg')" data-src="sasha1.jpg"></div>
+        <div class="thumb" style="background-image:url('sasha2.jpg')" data-src="sasha2.jpg"></div>
+        <div class="thumb" style="background-image:url('sasha3.jpg')" data-src="sasha3.jpg"></div>
+        <div class="thumb" style="background-image:url('sasha4.jpg')" data-src="sasha4.jpg"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Секретный квест — мини-игра</h3>
+      <p style="margin-top:6px">Поймай 10 сердечек, чтобы открыть личное послание.</p>
+      <div class="game-area" id="gameArea" aria-label="Игровая зона" style="margin-top:12px">
+        <div class="basket" id="basket">Лови</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="startBtn">Начать</button>
+        <button class="btn btn-ghost" id="resetBtn">Сброс</button>
+        <div style="background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:10px">Поймано: <strong id="score">0</strong>/10</div>
+      </div>
+      <p style="margin-top:10px;color:rgba(255,255,255,0.7)">Если хочешь открыть секрет сразу — нажми «Открыть секрет» вверху, но послание откроется полностью только после прохождения игры.</p>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:14px">
+    <h3>Ещё немного любви</h3>
+    <p>Мы оставили личное послание — оно откроется после успешного прохождения игры. А также в любой момент можно посмотреть поздравление от друзей (кнопка «Друзья» сверху).</p>
+  </section>
+
+  <div class="footer">Сделано с любовью ❤️ — персональная страница для Саши</div>
+</div>
+
+<!-- FRIENDS MODAL (uses friends.jpg) -->
+<div class="modal" id="modalFriends" role="dialog" aria-hidden="true">
+  <div class="modal-inner">
+    <button class="close" id="closeFriends">✕</button>
+    <h2>От нашей банды! 🥳</h2>
+    <p style="margin-top:8px">Сашуля! Мы тебя обожаем! Ты — наш лучик солнца, генератор сумасшедших идей и самый верный друг.</p>
+    <img src="friends.jpg" alt="Саша с друзьями" style="width:100%;border-radius:12px;margin-top:12px">
+    <p style="font-weight:700;color:var(--accent-1);margin-top:12px">Обнимаем, твои друзья! (Глеб, Коля, Кирилл, Лера)</p>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px">
+      <button class="btn btn-ghost" id="closeFriends2">Назад</button>
+    </div>
+  </div>
+</div>
+
+<!-- SECRET MODAL -->
+<div class="modal" id="modalSecret" role="dialog" aria-hidden="true">
+  <div class="modal-inner">
+    <button class="close" id="closeSecret">✕</button>
+    <h2>Лично от меня... ❤️</h2>
+    <p id="secretText" style="margin-top:8px">(Секрет откроется после прохождения игры)</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+      <button class="btn btn-primary" id="openSecretNow">Открыть сейчас</button>
+      <button class="btn btn-ghost" id="closeSecret2">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- decorative sparkles container (optional extra) -->
+<div class="sparks" id="sparks"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+
+  /* --- Sparkles canvas (visual only, non-blocking) --- */
+  const canvas = document.getElementById('sparkle-canvas');
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const N=60;
+  const sarr = [];
+  for(let i=0;i<N;i++) sarr.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, o:Math.random()*0.8+0.2, vy:Math.random()*0.8+0.2});
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    sarr.forEach(s=>{
+      s.y += s.vy; if(s.y>canvas.height){ s.y= -10; s.x=Math.random()*canvas.width;}
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,'+s.o+')';
+      ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(255,111,181,0.22)';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  /* --- sparkles DOM (tiny colored dots) --- */
+  const sparkwrap = document.getElementById('sparks');
+  const cols = ['#FF6FB5','#7BD3FF','#FFD37B'];
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='spark'; d.style.width=(6+Math.random()*12)+'px'; d.style.height=d.style.width;
+    d.style.left=(Math.random()*100)+'%'; d.style.top=(Math.random()*90)+'%';
+    d.style.position='absolute'; d.style.borderRadius='50%'; d.style.opacity=0.7; d.style.background=cols[i%cols.length];
+    d.style.filter='blur(6px)'; d.style.zIndex=1;
+    sparkwrap.appendChild(d);
+  }
+
+  /* --- Modal logic (open/close) --- */
+  const main = document.querySelector('.container');
+  function openModal(el){
+    el.classList.add('open'); el.style.visibility='visible';
+    document.body.style.overflow='hidden';
+  }
+  function closeModal(el){
+    el.classList.remove('open'); el.style.visibility='';
+    document.body.style.overflow='';
+  }
+
+  // Friends modal
+  const modalFriends = document.getElementById('modalFriends');
+  document.getElementById('open-friends').addEventListener('click', ()=> openModal(modalFriends));
+  document.getElementById('closeFriends').addEventListener('click', ()=> closeModal(modalFriends));
+  document.getElementById('closeFriends2').addEventListener('click', ()=> closeModal(modalFriends));
+
+  // Secret modal
+  const modalSecret = document.getElementById('modalSecret');
+  document.getElementById('open-secret').addEventListener('click', ()=> openModal(modalSecret));
+  document.getElementById('closeSecret').addEventListener('click', ()=> closeModal(modalSecret));
+  document.getElementById('closeSecret2').addEventListener('click', ()=> closeModal(modalSecret));
+
+  document.addEventListener('keydown',(e)=>{ if(e.key==='Escape'){ closeModal(modalFriends); closeModal(modalSecret); } });
+
+  /* --- Gallery thumbs open Friends modal for larger view --- */
+  document.querySelectorAll('.thumb').forEach(t=>{
+    t.addEventListener('click', ()=> openModal(modalFriends) );
+  });
+
+  /* --- Mini-game: catch hearts --- */
+  const gameArea = document.getElementById('gameArea');
+  const basket = document.getElementById('basket');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const scoreSpan = document.getElementById('score');
+  const secretText = document.getElementById('secretText');
+  const openSecretNowBtn = document.getElementById('openSecretNow');
+
+  let heartsCaught = 0, heartsDropped = 0, TOTAL = 10, running = false, dropInterval = null, animFrame = null;
+
+  function moveBasket(clientX){
+    const rect = gameArea.getBoundingClientRect();
+    let x = clientX - rect.left - basket.offsetWidth/2;
+    x = Math.max(0, Math.min(x, rect.width - basket.offsetWidth));
+    basket.style.left = x + 'px';
+  }
+  gameArea.addEventListener('pointermove', e => moveBasket(e.clientX));
+  gameArea.addEventListener('touchmove', e => { if(e.touches && e.touches[0]) moveBasket(e.touches[0].clientX); }, {passive:false});
+
+  function createHeart(){
+    if(heartsDropped >= TOTAL) return;
+    const h = document.createElement('div'); h.className='heart'; h.innerText='💖';
+    const size = 28;
+    const left = Math.random()*(gameArea.clientWidth - size);
+    h.style.left = left + 'px'; h.style.top = '-40px';
+    gameArea.appendChild(h);
+    heartsDropped++;
+  }
+
+  function gameLoop(){
+    if(!running) return;
+    const hearts = [...gameArea.querySelectorAll('.heart')];
+    const bRect = basket.getBoundingClientRect();
+    const gRect = gameArea.getBoundingClientRect();
+    for(const h of hearts){
+      const y = (parseFloat(h.style.top) || -40) + (2 + Math.random()*2);
+      h.style.top = y + 'px';
+      const hRect = h.getBoundingClientRect();
+      // caught
+      if(hRect.bottom > bRect.top && hRect.left < bRect.right && hRect.right > bRect.left){
+        h.remove(); heartsCaught++; scoreSpan.textContent = heartsCaught;
+        if(heartsCaught >= TOTAL){ winGame(); break; }
+      } else if(hRect.top > gRect.bottom - 5){
+        // missed -> lose
+        h.remove(); loseGame(); break;
+      }
+    }
+    animFrame = requestAnimationFrame(gameLoop);
+  }
+
+  function startGame(){
+    if(running) return;
+    resetGame();
+    running = true;
+    dropInterval = setInterval(()=>{ if(heartsDropped < TOTAL) createHeart(); else clearInterval(dropInterval); }, 700);
+    gameLoop();
+  }
+  function winGame(){
+  running = false;
+  clearInterval(dropInterval);
+  cancelAnimationFrame(animFrame);
+
+  // создаём содержимое с фото и текстом
+  secretText.innerHTML = `
+    <img src="2025-06-28-14-52-45-_1_.jpg" alt="Саша&Коля" 
+         style="width:100%;max-width:340px;border-radius:18px;
+                box-shadow:0 0 25px rgba(255,0,195,0.6);
+                margin:1rem auto;display:block;">
+    <p style="margin-top:8px">
+      Саша, с днём рождения! 💖<br>
+      Пусть рядом будут самые светлые люди, пусть сбываются мечты,<br>
+      а мир улыбается тебе каждый день.<br>
+      <strong>— Коля ❤️</strong>
+    </p>
+  `;
+
+  // если окно не открыто — показать автоматически
+  if(!modalSecret.classList.contains('open')){
+    openModal(modalSecret);
+  }
+
+  alert('Поздравляю! 🎉 Ты поймала все сердечки — секрет открывается!');
+  }
+  function loseGame(){
+    running = false; clearInterval(dropInterval); cancelAnimationFrame(animFrame);
+    alert('Ой, промах — попробуй ещё раз!');
+  }
+  function resetGame(){
+    running=false; clearInterval(dropInterval); cancelAnimationFrame(animFrame);
+    heartsCaught=0; heartsDropped=0;
+    scoreSpan.textContent = '0';
+    document.querySelectorAll('.heart').forEach(h=>h.remove());
+  }
+
+  startBtn.addEventListener('click', startGame);
+  resetBtn.addEventListener('click', resetGame);
+
+  // open secret now button: show secret only if game completed
+  openSecretNowBtn.addEventListener('click', ()=>{
+    if(heartsCaught >= TOTAL || modalSecret.classList.contains('open') && secretText.textContent.includes('Киса')){
+      // already revealed
+      alert('Секрет уже открыт :)');
+    } else {
+      secretText.textContent = 'Сначала попробуй пройти мини-игру — это весело! Или поймай сердечки и вернись.';
+      // keep modal open
+    }
+  });
+
+  // Accessibility: click outside modal closes it
+  document.querySelectorAll('.modal').forEach(mod=>{
+    mod.addEventListener('click', (e)=>{
+      if(e.target === mod){
+        closeModal(mod);
+      }
+    });
+  });
+
+  // ensure main area is accessible and interactive: on load remove possible blocking overlays
+  document.body.style.pointerEvents = 'auto';
+
+  // small safety: if user clicked "Open Secret" but wants to reveal and game already done (e.g. reopened)
+  document.getElementById('open-secret').addEventListener('click', ()=>{
+    if(heartsCaught >= TOTAL){
+      secretText.textContent = 'Саша, с днём рождения! Пусть у тебя будет море тепла, верные друзья и много радости. — Твой Киса ❤️';
+    } else {
+      secretText.textContent = '(Секрет откроется после прохождения игры)';
+    }
+  });
+
+});
+</script>
+</body>
+</html>
